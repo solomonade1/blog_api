@@ -59,7 +59,14 @@ const deletePost = async (req, res, next) => {
 
 const getPost = async (req, res, next) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findByIdAndUpdate(
+      req.params.id,
+      {
+        $inc: { read_count: +1 },
+      },
+      { new: true }
+    );
+
     res.status(200).json(post);
   } catch (err) {
     next(err);
