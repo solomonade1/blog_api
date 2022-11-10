@@ -32,9 +32,13 @@ const PostSchema = new mongoose.Schema(
     },
     reading_time: {
       type: Number,
+      default: 1,
       require: false,
     },
-    tags: [String],
+    tags: {
+      type: ObjectId,
+      ref: "Tag"
+    }
   },
   { timestamps: true }
 );

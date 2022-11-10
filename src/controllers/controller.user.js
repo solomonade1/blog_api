@@ -35,9 +35,18 @@ const getUser = async (req, res, next) => {
   }
 };
 const getAllUser = async (req, res, next) => {
+  const filters = req.query
   try {
     const users = await User.find();
-    res.status(200).json(users);
+    const filteredUsers = users.filter((user) => {
+      let isValid = true;
+      for (key in filters) {
+        isValid = isValid && user[key] === filters[key];
+      }
+      return isValid;
+    });
+    // res.send(filteredUsers);
+    res.status(200).json(filteredUsers);
   } catch (err) {
     next(err);
   }
@@ -53,10 +62,14 @@ const populatePost = async (req ,res, next) => {
 }
 const getUserPost = async (req, res, next) => {
   try {
+    const match = {}
+    if (req.query.state) {
+      match.state = req.query.state === "published";
+    }
     const user = await User.findById(req.params.id);
     const postList = await Promise.all(
       user.posts.map((post) => {
-        return Post.findById(post);
+        return Post.findById(post)
       })
     );
     res.status(200).json(postList);

@@ -7,8 +7,12 @@ const tagSchema = new mongoose.Schema(
       trim: true,
       required: true,
     },
+    post: {
+      type: mongoose.Types.ObjectId,
+      ref: "Post",
+    },
   },
-  { timestamp: true }
+  { timestamps: true }
 );
 const Tag = mongoose.model("Tag", tagSchema);
 module.exports = Tag;

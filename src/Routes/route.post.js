@@ -7,17 +7,22 @@ const {
   deletePost,
   getPost,
   getallPost,
-  getPublished,
+
   getByPublishedId,
-  populateAuthor,
+  publishPost,
+  myAllposts,
+  getAll,
 } = require("../controllers/controller.post");
 
 const postRoute = express.Router();
 
 postRoute.get("/all", getallPost);
-postRoute.get("/pub", getPublished);
+postRoute.get("/getall", getAll)
+
 postRoute.get("/pub/:id", getByPublishedId);
-postRoute.get("/author/:authorid", populateAuthor);
+postRoute.put("/publish/:id/", verifyUser, publishPost);
+
+postRoute.get("/allpost", myAllposts)
 
 postRoute.post("/:userid", verifyUser, createPost);
 
