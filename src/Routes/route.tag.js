@@ -19,7 +19,7 @@ tagRouter.get("/:id", getTag);
 
 tagRouter.get("/", getAllTags);
 
-tagRouter.delete("/:id", verifyUser, deleteTag);
+tagRouter.delete("/:tagid/:postid", verifyUser, deleteTag);
 
 
 module.exports = tagRouter;

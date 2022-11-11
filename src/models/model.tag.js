@@ -6,10 +6,7 @@ const tagSchema = new mongoose.Schema(
       type: String,
       trim: true,
       required: true,
-    },
-    post: {
-      type: mongoose.Types.ObjectId,
-      ref: "Post",
+      unique: true,
     },
   },
   { timestamps: true }

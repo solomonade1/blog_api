@@ -36,9 +36,9 @@ const PostSchema = new mongoose.Schema(
       require: false,
     },
     tags: {
-      type: ObjectId,
-      ref: "Tag"
-    }
+      type: Array,
+      default: [],
+    },
   },
   { timestamps: true }
 );

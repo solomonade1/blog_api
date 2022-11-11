@@ -2,19 +2,19 @@ const Tag = require("../models/model.tag");
 const Post = require("../models/model.post");
 
 const createTag = async (req, res, next) => {
-  const newTag = new Tag({
-    ...req.body,
-    post: req.params.id,
-  });
+  const postId = req.params.postid;
+  const newTag = new Tag(req.body);
 
   try {
     const savedTag = await newTag.save();
-    try {
-      
-    } catch (err) {
-      next(err)
-    }
-   
+     try {
+       await Post.findByIdAndUpdate(postId, {
+         $push: { tags:  savedTag.name},
+       });
+     } catch (err) {
+       next(err); 
+     }
+
     res.status(200).json(savedTag);
   } catch (error) {
     next(error);
@@ -44,20 +44,17 @@ const deleteTag = async (req, res, next) => {
 
   try {
     const deleted = await Tag.findByIdAndDelete(req.params.id);
-        if(!deleted) {
-            return res.status(404).json({
-                message: "Item not found",
-                success: false,
-            });
-        }
-        return res.status(204).json({
-            message: "Item successfully deleted",
-            success: true,
-        });
-  
+    try {
+      await Post.findByIdAndUpdate(postId, {
+        $pull: { tags: deleted.name },
+      });
+    } catch (err) {
+      next(err);
+    }
+
     res.status(200).json("Tag has been deleted");
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -73,8 +70,8 @@ const getTag = async (req, res, next) => {
 
 const getAllTags = async (req, res, next) => {
   try {
-    const tags = await Tag.find()
-    res.status(200).json(tags)
+    const tags = await Tag.find();
+    res.status(200).json(tags);
   } catch (err) {
     next(err);
   }

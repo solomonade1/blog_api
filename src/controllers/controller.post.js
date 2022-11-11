@@ -7,13 +7,15 @@ const ObjectId = mongoose.Types.ObjectId;
 
 const createPost = async (req, res, next) => {
   const userId = req.params.userid;
-  const newPost =  new Post({
+  const newPost = new Post({
     ...req.body,
     author: req.user.id,
   });
 
   try {
-    const savedPost = await newPost.save().populate("author");
+    const savedPost = await (
+      await newPost.save()
+    ).populate("author", "firstName");
     try {
       await User.findByIdAndUpdate(userId, {
         $push: { posts: savedPost._id },
@@ -107,83 +109,72 @@ const getallPost = async (req, res, next) => {
 
 const myAllposts = async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page) - 1 || 0;
-    const limit = parseInt(req.query.limit) || 10;
-    const search = req.query.search || "";
-    let tag = req.query.tag || "All";
-    let sort = req.query.sort;
+    const { query } = req;
 
-    const tagArray = await Tag.find();
-    let tagOptions = tagArray.map((tag) => {
-      return tag.name;
-    });
-    // const tagOptions = [
-    //   "business",
-    //   "business",
-    //   "new politics",
-    //   "new politics",
-    //   "music",
-    //   "life style",
-    // ];
-    tag === "All"
-      ? tag = [...tagOptions]
-      : (tag = req.query.tag.split(","));
-    req.query.sort ? sort.query.sort.split(",") : (sort = [sort]);
+    const {
+      createdAt,
+      state,
+      title,
+      order = "asc",
+      order_by = "createdAt",
+      page = 1,
+      per_page = 20,
+    } = query;
 
-    console.log(tagOptions);
-    let sortBy = {};
+    const findQuery = {};
 
-    if (sort[1]) {
-      sortBy[sort[0]] = sort[1];
-    } else {
-      sortBy[sort[0]] = "asc";
+    if (createdAt) {
+      findQuery.created_at = {
+        $gt: createdAt.startOf("day").toDate(),
+        $lt: createdAt.endOf("day").toDate(),
+      };
     }
-    // {author: {$regex: search, $options: "i"}}
-    const posts = await Post.find({
-      $or: [
-        // { author: { $regex: search, $options: "i" } },
-        { title: { $regex: search, $options: "i" } },
-      ],
-    })
-      .where("tag")
-      .in(...tag)
-      .sort(sortBy)
-      .skip(page * limit)
-      .limit(limit);
 
-    const total = await Post.countDocuments({
-      tag: { $in: [...tag] },
-      // author: { $regex: search, $options: "i" },
-      title: { $regex: search, $options: "i" },
-    });
+    if (state) {
+      findQuery.state = state;
+    }
+    // if (search) {
+    //   findQuery.search = search;
+    // }
+     if(title) {
+      findQuery.title = title
+     }
 
-    const response = {
-      error: false,
-      object: "lists",
-      total,
-      page: page + 1,
-      limit,
-      tag: tagOptions,
-      posts,
-    };
-    res.status(200).json(response);
+    const sortQuery = {};
+
+    const sortAttributes = order_by.split(",");
+
+    for (const attribute of sortAttributes) {
+      if (order === "asc" && order_by) {
+        sortQuery[attribute] = 1;
+      }
+
+      if (order === "desc" && order_by) {
+        sortQuery[attribute] = -1;
+      }
+    }
+
+    const posts = await Post.find(findQuery)
+      .populate("author", "firstName")
+      .sort(sortQuery)
+      .skip(page)
+      .limit(per_page);
+    return res.status(200).json({ status: true, posts });
   } catch (err) {
     next(err);
   }
 };
 
-
 const getAllThePost = async (req, res, next) => {
   try {
-    const post = await Post.find({})
+    const post = await Post.find({});
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
-
+};
 
 const getAll = async (req, res) => {
-  const match = {}
+  const match = {};
   try {
     const [results, itemCount] = await Promise.all([
       Post.find({})
@@ -197,8 +188,6 @@ const getAll = async (req, res) => {
     ]);
     const pageCount = Math.ceil(itemCount / req.query.limit);
     return res.status(201).json({
-    
-
       data: results,
       pageCount,
       itemCount,
@@ -255,5 +244,5 @@ module.exports = {
   getByPublishedId,
   publishPost,
   myAllposts,
-  getAll
+  getAll,
 };
