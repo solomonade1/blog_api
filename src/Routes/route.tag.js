@@ -21,5 +21,4 @@ tagRouter.get("/", getAllTags);
 
 tagRouter.delete("/:tagid/:postid", verifyUser, deleteTag);
 
-
 module.exports = tagRouter;

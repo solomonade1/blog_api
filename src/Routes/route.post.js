@@ -1,39 +1,40 @@
 const express = require("express");
-const { verifyUser } = require("../utils/verifyToken");
+const { verifyUser, verifyAdmin } = require("../utils/verifyToken");
 const {
   createPost,
-  getPosts,
   updatePost,
   deletePost,
-  getPost,
-  getallPost,
-
-  getByPublishedId,
+  getAllPost,
+  getDraftPosts,
+  getPublishedPosts,
+  getPostById,
   publishPost,
-  myAllposts,
-  getAll,
 } = require("../controllers/controller.post");
 
 const postRoute = express.Router();
 
-postRoute.get("/all", getallPost);
-postRoute.get("/getall", getAll)
+// CREATE POST
+postRoute.post("/create/:userid", verifyUser, createPost);
 
-postRoute.get("/pub/:id", getByPublishedId);
-postRoute.put("/publish/:id/", verifyUser, publishPost);
+// UPDATE POST
+postRoute.put("update/:id", verifyUser, updatePost);
 
-postRoute.get("/allpost", myAllposts)
+//DELETE POST
+postRoute.delete("delete/:id/:userid", verifyUser, deletePost);
 
-postRoute.post("/:userid", verifyUser, createPost);
+// GET PUBLISH POST
+postRoute.get("/allpublish", getPublishedPosts);
 
-postRoute.put("/:id", verifyUser, updatePost);
+// GET POST BY ID
+postRoute.get("/mypost/:id", getPostById);
 
-postRoute.delete("/:id/:userid", verifyUser, deletePost);
+// PUBLISH POST
+postRoute.put("/publishpost/:id", verifyUser, publishPost);
 
-postRoute.get("/:id", getPost);
+// GET ALL POSTS
+postRoute.get("/getallpost", getAllPost);
 
-postRoute.get("/", getallPost);
-
-// postRoute.get("/pub", getPublished);
+// GET DRAFT POST
+postRoute.get("/draft", verifyUser, getDraftPosts);
 
 module.exports = postRoute;

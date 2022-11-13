@@ -5,20 +5,25 @@ const PostSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      require: true,
+      required: true,
       unique: true,
     },
     author: {
       type: ObjectId,
       ref: "User",
     },
+    username: {
+      type: String,
+      trim: true,
+      required: true,
+    },
     desc: {
       type: String,
-      require: true,
+      required: true,
     },
     body: {
       type: String,
-      require: true,
+      required: true,
     },
     state: {
       type: String,
@@ -28,12 +33,12 @@ const PostSchema = new mongoose.Schema(
     read_count: {
       type: Number,
       default: 0,
-      require: false,
+      required: false,
     },
     reading_time: {
       type: Number,
       default: 1,
-      require: false,
+      required: false,
     },
     tags: {
       type: Array,
