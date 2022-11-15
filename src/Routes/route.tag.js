@@ -7,6 +7,7 @@ const {
   getTag,
   getAllTags,
   deleteTag,
+  deleteAll,
 } = require("../controllers/controller.tag");
 
 const tagRouter = express.Router();
@@ -20,5 +21,6 @@ tagRouter.get("/:id", getTag);
 tagRouter.get("/", getAllTags);
 
 tagRouter.delete("/:tagid/:postid", verifyUser, deleteTag);
+tagRouter.delete("/deleteall", deleteAll)
 
 module.exports = tagRouter;

@@ -20,6 +20,8 @@ app.use("/api/user", userRoute);
 app.use("/api/post", postRoute);
 app.use("/api/tag", tagRoute);
 
+
+
 // Error Handle middleware
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;

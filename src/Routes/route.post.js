@@ -20,7 +20,7 @@ postRoute.post("/create/:userid", verifyUser, createPost);
 postRoute.put("update/:id", verifyUser, updatePost);
 
 //DELETE POST
-postRoute.delete("delete/:id/:userid", verifyUser, deletePost);
+postRoute.delete("/delete/:id/:userid", verifyUser, deletePost);
 
 // GET PUBLISH POST
 postRoute.get("/allpublish", getPublishedPosts);

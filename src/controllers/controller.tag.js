@@ -97,10 +97,20 @@ const getAllTags = async (req, res, next) => {
   }
 };
 
+const deleteAll = async (req, res, next) => {
+  try {
+    await Tag.deleteMany()
+    res.status(200).json("Tags has been deleted")
+  } catch (err) {
+    next(err)
+  }
+}
+
 module.exports = {
   createTag,
   updateTag,
   deleteTag,
   getTag,
   getAllTags,
+  deleteAll
 };
